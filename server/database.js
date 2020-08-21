@@ -104,43 +104,51 @@ const getAllProperties = function(options, limit = 10) {
   FROM properties
   JOIN property_reviews ON properties.id = property_id
   `;
-  if (queryParams.length === 1) {
-    queryString += `WHERE `;
-  }
-
+  
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     if (queryParams.length === 1) {
-      if (options.owner_id) {
-        queryString += `city LIKE $${queryParams.length}`;
-      }
+      queryString += `WHERE city LIKE $${queryParams.length} `;
     }
   }
-  if (queryParams.length > 1) {
-    queryString += `AND`;
-  }
+
   if (options.owner_id) {
     queryParams.push(`${options.owner_id}`);
     if (queryParams.length >= 1) {
-      if (option.owner_id) {
-        queryString += `owner_id = $${queryParams.length}`;
-      }
+      queryString += `AND `;
+    }
+    if (queryParams.length < 1) {
+      queryString += `WHERE `;
+    }
+    if (option.owner_id) {
+      queryString += `owner_id = $${queryParams.length} `;
     }
   }
 
   if (options.minimum_price_per_night) {
     queryParams.push(`${options.minimum_price_per_night}`);
-    queryString += `minimum_price_per_night = $${queryParams.length} `;
+    if (queryParams.length >= 1) {
+      queryString += `AND `;
+    }
+    if (queryParams.length < 1) {
+      queryString += `WHERE `;
+    }
+    queryString += `cost_per_night < $${queryParams.length} `;
   }
 
   if (options.maximum_price_per_night) {
     queryParams.push(`${options.maximum_price_per_night}`);
-    if (options.maximum_price_per_night) {
-      queryString += `AND maximum_price_per_night = $${queryParams.length} `;
+    if (queryParams.length >= 1) {
+      queryString += `AND `;
     }
+    if (queryParams.length < 1) {
+      queryString += `WHERE `;
+    }
+    queryString += `cost_per_night < $${queryParams.length} `;
   }
 
-  queryString += `GROUP BY properties.id`;
+  queryString += `GROUP BY properties.id 
+  `;
 
   if (options.minimum_rating) {
     queryParams.push(`${options.minimum_rating}`);
@@ -150,7 +158,7 @@ const getAllProperties = function(options, limit = 10) {
   queryString += `
   ORDER BY cost_per_night
   LIMIT ${limit};
-  `, [options];
+  `, [options.city, options.cost_per_night, options.cost_per_night, options.minimum_rating];
 
   console.log("queryString;", queryString, "queryParams; ", queryParams);
 
