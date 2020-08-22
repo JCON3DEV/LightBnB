@@ -120,7 +120,7 @@ const getAllProperties = function(options, limit = 10) {
     if (queryParams.length < 1) {
       queryString += `WHERE `;
     }
-    if (option.owner_id) {
+    if (options.owner_id) {
       queryString += `owner_id = $${queryParams.length} `;
     }
   }
@@ -133,7 +133,7 @@ const getAllProperties = function(options, limit = 10) {
     if (queryParams.length < 1) {
       queryString += `WHERE `;
     }
-    queryString += `cost_per_night < $${queryParams.length} `;
+    queryString += `cost_per_night > $${queryParams.length} `;
   }
 
   if (options.maximum_price_per_night) {
@@ -158,11 +158,12 @@ const getAllProperties = function(options, limit = 10) {
   queryString += `
   ORDER BY cost_per_night
   LIMIT ${limit};
-  `, [options.city, options.cost_per_night, options.cost_per_night, options.minimum_rating];
+  `, [options.city, options.owner_id, options.cost_per_night, options.cost_per_night, options.minimum_rating];
 
   console.log("queryString;", queryString, "queryParams; ", queryParams);
-
+  console.log("THese are the options;", options);
   return pool.query(queryString, queryParams)
+    // return pool.query("SELECT * FROM properties WHERE owner_id = $1;", [options.owner_id])
     .then(res => res.rows);
 
 
