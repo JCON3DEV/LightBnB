@@ -82,10 +82,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   ORDER BY start_date ASC
   LIMIT $2;
   `, [guest_id,limit])
-  // Error is here CORRECT DATE #################################################
   .then(res => res.rows)
-  // --reservations.start_date, end_date, 
-  // return getAllProperties(null, 2);
 }
 exports.getAllReservations = getAllReservations;
 
@@ -163,28 +160,7 @@ const getAllProperties = function(options, limit = 10) {
   console.log("queryString;", queryString, "queryParams; ", queryParams);
   console.log("THese are the options;", options);
   return pool.query(queryString, queryParams)
-    // return pool.query("SELECT * FROM properties WHERE owner_id = $1;", [options.owner_id])
     .then(res => res.rows);
-
-
-  // return pool.query(`
-  //   SELECT properties.*, avg(property_reviews.rating) as average_rating
-  //   FROM properties
-  //   JOIN property_reviews ON property_id = properties.id
-  //   WHERE city LIKE '%$1%'
-  //   GROUP BY properties.id
-  //   HAVING avg(property_reviews.rating) >= 4
-  //   ORDER BY cost_per_night ASC
-  //   LIMIT $2;
-  // `, [options, limit])
-  // .then(res => res.rows)
-  
-  // return pool.query(`
-  // SELECT * 
-  // FROM properties
-  // LIMIT $1
-  // `, [limit])
-  //   .then(res => res.rows)
 }
 exports.getAllProperties = getAllProperties;
 
